@@ -10,7 +10,7 @@ root_dir = "Speaker-Identification"
 data_dir = os.path.join(root_dir, "16000_pcm_speeches")
 background_noise_dir = os.path.join(data_dir, "_background_noise_")
 speaker_folders = ["Benjamin_Netanyahu", "Jens_Stoltenberg", "Julia_Gillard", "Margaret_Tacher", "Nelson_Mandela"]
-speaker_paths = [os.path.join(data_dir, speaker) for speaker in speaker_folders]
+speaker_paths = ["16000_pcm_speeches//Benjamin_Netanyau", "16000_pcm_speeches//Jens_Stoltenberg", "16000_pcm_speeches//Julia_Gillard", "16000_pcm_speeches//Margaret_Tacher", "16000_pcm_speeches//Nelson_Mandela"]
 
 def extract_features(file_name):
     audio, sample_rate = librosa.load(file_name, res_type='kaiser_fast') 
