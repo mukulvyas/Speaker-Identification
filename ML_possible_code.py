@@ -8,9 +8,9 @@ from sklearn.preprocessing import LabelEncoder, StandardScaler
 # Setting up the directories
 root_dir = "Speaker-Identification"
 data_dir = os.path.join(root_dir, "16000_pcm_speeches")
-background_noise_dir = os.path.join(data_dir, "_background_noise_")
+background_noise_dir = "16000_pcm_speeches//_background_noise_"
 speaker_folders = ["Benjamin_Netanyau", "Jens_Stoltenberg", "Julia_Gillard", "Margaret_Tarcher", "Nelson_Mandela"]
-speaker_paths = [os.path.join(data_dir, speaker) for speaker in speaker_folders]
+speaker_paths = ["16000_pcm_speeches//Benjamin_Netanyau", "16000_pcm_speeches//Jens_Stoltenberg", "16000_pcm_speeches//Julia_Gillard", "16000_pcm_speeches//Magaret_Tarcher", "16000_pcm_speeches//Nelson_Mandela"]
 
 def extract_features(file_name):
     audio, sample_rate = librosa.load(file_name, res_type='kaiser_fast') 
@@ -21,15 +21,14 @@ features = []
 labels = []
 
 # Extracting features from the audio files
-for speaker, spath in zip(speaker_folders, speaker_paths):
-    if not os.path.exists(spath):
-        print(f"Directory not found: {spath}")
-        continue
-    for filename in os.listdir(spath):
-        if filename.endswith(".wav"):
-            data = extract_features(os.path.join(spath, filename))
+for i in range(len(speaker_paths)):
+    for file in os.listdir(speaker_paths[i]):
+        if file.endswith(".wav"):
+            file_name = os.path.join(speaker_paths[i], file)
+            class_label = speaker_folders[i]
+            data = extract_features(file_name)
             features.append(data)
-            labels.append(speaker)
+            labels.append(class_label)
 
 # Ensure there are extracted features before proceeding
 if not features:
