@@ -9,8 +9,8 @@ from sklearn.preprocessing import LabelEncoder, StandardScaler
 root_dir = "Speaker-Identification"
 data_dir = os.path.join(root_dir, "16000_pcm_speeches")
 background_noise_dir = os.path.join(data_dir, "_background_noise_")
-speaker_folders = ["Benjamin_Netanyahu", "Jens_Stoltenberg", "Julia_Gillard", "Margaret_Tacher", "Nelson_Mandela"]
-speaker_paths = ["16000_pcm_speeches//Benjamin_Netanyau", "16000_pcm_speeches//Jens_Stoltenberg", "16000_pcm_speeches//Julia_Gillard", "16000_pcm_speeches//Margaret_Tacher", "16000_pcm_speeches//Nelson_Mandela"]
+speaker_folders = ["Benjamin_Netanyau", "Jens_Stoltenberg", "Julia_Gillard", "Margaret_Tarcher", "Nelson_Mandela"]
+speaker_paths = [os.path.join(data_dir, speaker) for speaker in speaker_folders]
 
 def extract_features(file_name):
     audio, sample_rate = librosa.load(file_name, res_type='kaiser_fast') 
@@ -22,11 +22,18 @@ labels = []
 
 # Extracting features from the audio files
 for speaker, spath in zip(speaker_folders, speaker_paths):
+    if not os.path.exists(spath):
+        print(f"Directory not found: {spath}")
+        continue
     for filename in os.listdir(spath):
         if filename.endswith(".wav"):
             data = extract_features(os.path.join(spath, filename))
             features.append(data)
             labels.append(speaker)
+
+# Ensure there are extracted features before proceeding
+if not features:
+    raise ValueError("No features were extracted. Check the directories and data.")
 
 features_df = pd.DataFrame(features, columns=[f'feature_{i}' for i in range(features[0].shape[0])])
 features_df['label'] = labels
@@ -36,7 +43,7 @@ noise_files = [os.path.join(background_noise_dir, file) for file in os.listdir(b
 for i in range(len(features_df)):
     noise = np.random.choice(noise_files)
     y_noise, sr_noise = librosa.load(noise, duration=1.0)
-    y, sr = librosa.load(os.path.join(speaker_paths[features_df['label'][i]], str(i) + ".wav"), duration=1.0)
+    y, sr = librosa.load(os.path.join(data_dir, features_df['label'][i], str(i) + ".wav"), duration=1.0)
     y += y_noise
     mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=40)
     features_df.iloc[i, :-1] = np.mean(mfcc.T, axis=0)
