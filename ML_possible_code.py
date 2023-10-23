@@ -6,9 +6,10 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 
 # Setting up the directories
-data_dir = "./"
+root_dir = "Speaker-Identification"
+data_dir = os.path.join(root_dir, "16000_pcm_speeches")
 background_noise_dir = os.path.join(data_dir, "_background_noise_")
-speaker_folders = ["Benjamin Netanyahu", "Jens Stoltenberg", "Julia Gillard", "Margaret Tacher", "Nelson Mandela"]
+speaker_folders = ["Benjamin_Netanyahu", "Jens_Stoltenberg", "Julia_Gillard", "Margaret_Tacher", "Nelson_Mandela"]
 speaker_paths = [os.path.join(data_dir, speaker) for speaker in speaker_folders]
 
 def extract_features(file_name):
