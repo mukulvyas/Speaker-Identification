@@ -6,7 +6,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 
 # Setting up the directories
-root_dir = "Speaker-Identification"
+root_dir = "../Speaker-Identification"
 data_dir = os.path.join(root_dir, "16000_pcm_speeches")
 background_noise_dir = "16000_pcm_speeches//_background_noise_"
 speaker_folders = ["Benjamin_Netanyau", "Jens_Stoltenberg", "Julia_Gillard", "Margaret_Tarcher", "Nelson_Mandela"]
@@ -37,6 +37,9 @@ if not features:
 features_df = pd.DataFrame(features, columns=[f'feature_{i}' for i in range(features[0].shape[0])])
 features_df['label'] = labels
 
+# Corrected code
+for label in labels:
+    features_df['filename'] = [os.path.join(data_dir, label, file) for file in os.listdir(os.path.join(data_dir, label))]
 # Adding noise
 noise_files = [os.path.join(background_noise_dir, file) for file in os.listdir(background_noise_dir) if file.endswith('.wav')]
 for i in range(len(features_df)):
@@ -44,10 +47,8 @@ for i in range(len(features_df)):
     y_noise, sr_noise = librosa.load(noise, duration=1.0)
     y, sr = librosa.load(os.path.join(data_dir, features_df['label'][i], str(i) + ".wav"), duration=1.0)
     y += y_noise
-    mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=40)
-    features_df.iloc[i, :-1] = np.mean(mfcc.T, axis=0)
-
-# Label Encoding
+    file_name = features_df['filename'][i]
+    y, sr = librosa.load(file_name, duration=1.0)
 label_encoder = LabelEncoder()
 features_df['label'] = label_encoder.fit_transform(features_df['label'])
 
